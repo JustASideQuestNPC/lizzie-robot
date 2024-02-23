@@ -1,5 +1,5 @@
+# version of the robot class without any color_print calls
 from vec2d import *
-from color_print import color_print
 
 VERBOSE_LOGGING = True
 
@@ -35,24 +35,23 @@ class Robot:
     pass # keeps python happy; remove this when you add motor code
 
   def follow_path(self, path_name: str) -> None:
-    color_print(f"Moving along path '{path_name}'", foreground='magenta')
+    print(f"Moving along path '{path_name}'")
     path = ROBOT_PATHS[path_name]
     for i, node in enumerate(path):  
       reached_node = False
       while not reached_node:
-
         if VERBOSE_LOGGING:
-          color_print(f'--- Moving to node {i} ---', foreground='blue')
           print((
+            f'--- Moving to node {i} ---\n'
             f'Node position: {node}\n'
             f'Current position: {self.position}'
           ))
 
         if self.at_node(node):
           if VERBOSE_LOGGING:
-            color_print('Already at node!\n', foreground='green')
+            print('Already at node!\n')
           else:
-            color_print(f'Already at node {i}', foreground='green')
+            print(f'Already at node {i}')
           reached_node = True
         else:
           delta = node - self.position
@@ -91,7 +90,7 @@ class Robot:
           print(f'Moving to node {i}...', end='')
           self.turn_to_angle(heading_adjusted)
           self.move_forward(mag_degrees_adjusted)
-          color_print('done', foreground='green')
+          print('done')
 
           # update position
           self.position += position_offset
@@ -105,17 +104,18 @@ class Robot:
           # we're probably at the node, but check again just to be safe
           if self.at_node(node):
             if VERBOSE_LOGGING:
-              color_print('Position on target, moving to next node\n', foreground='green')
+              print('Position on target, moving to next node\n')
             reached_node = True
           elif VERBOSE_LOGGING:
-              color_print('Position off target, retrying current node\n', foreground='red')
-    
+             print('Position off target, retrying current node\n')
+
     # find the final error now that we've reached the end of the path
     end_node = ROBOT_PATHS[path_name][-1]
-    color_print('--- Pathing complete! ---', foreground='magenta')
+    print('--- Pathing complete! ---')
     if VERBOSE_LOGGING:
       print((
         f'Target position: {end_node}\n'
         f'Actual position: {self.position}\n'
         f'Error: {round((end_node - self.position).mag(), 3)}'
       ))
+            
