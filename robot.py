@@ -101,9 +101,8 @@ class Robot:
     # find the final error now that we've reached the end of the path
     end_node = ROBOT_PATHS[path_name][-1]
     color_print('--- Pathing complete! ---', foreground='magenta')
-    if VERBOSE_LOGGING:
-      print((
-        f'Target position: {end_node}\n'
-        f'Actual position: {self.position}\n'
-        f'Error: {round((end_node - self.position).mag(), 3)}'
-      ))
+    print((
+      f'Target position: {end_node}\n'
+      f'Actual position: {self.position}\n'
+      f'Error: {round((end_node - self.position).mag(), 3)} cm'
+    ))
