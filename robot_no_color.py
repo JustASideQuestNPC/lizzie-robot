@@ -1,5 +1,5 @@
 # version of the robot class without any color_print calls
-from vec2d import *
+from vector import *
 from robot_paths import *
 
 VERBOSE_LOGGING = True
@@ -8,11 +8,11 @@ NODE_SIZE = 0.5 # if the robot is within this many centimeters of a node, it's a
 
 class Robot:
   def __init__(self, x, y):
-    self.position = Vec2d(x, y)
+    self.position = Vector(x, y)
     self.heading = 0
 
-  def at_node(self, node: Vec2d) -> bool:
-    delta = node - self.position # Vec2d
+  def at_node(self, node: Vector) -> bool:
+    delta = node - self.position # Vector
     return delta.mag() < NODE_SIZE
   
   def turn_to_angle(self, angle: int) -> None:

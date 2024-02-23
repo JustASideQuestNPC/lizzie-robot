@@ -1,10 +1,10 @@
-from vec2d import *
+from vector import *
 
 ROBOT_PATHS = {
   'center->blue': (
-    Vec2d(0, 0),
-    Vec2d(0, -10),
-    Vec2d(-17, -52)
+    Vector(0, 0),
+    Vector(0, -10),
+    Vector(-17, -52)
   )
 }
 # add reversed paths
