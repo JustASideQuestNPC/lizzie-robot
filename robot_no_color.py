@@ -49,13 +49,13 @@ class Robot:
           # the magnitude will be a float and the motor control functions only take ints,
           # so we'll round to get as close as we can
           mag_cm_raw = delta.mag()
-          mag_degrees_raw = mag_cm_raw * 26 # convert to degrees for maximum precision
+          mag_degrees_raw = mag_cm_raw * 23 # convert to degrees for maximum precision
 
           mag_degrees_adjusted = round(mag_degrees_raw)
-          mag_cm_adjusted = mag_degrees_adjusted / 26
+          mag_cm_adjusted = mag_degrees_adjusted / 23
           
           mag_degrees_error = abs(mag_degrees_raw - mag_degrees_adjusted)
-          mag_cm_error = mag_degrees_error / 26
+          mag_cm_error = mag_degrees_error / 23
 
           # adjust the heading
           heading_raw = delta.heading()
