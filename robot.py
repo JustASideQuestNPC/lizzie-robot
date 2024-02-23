@@ -1,65 +1,104 @@
-import display_backend
+from vec2d import *
+from color_print import color_print
 
-GRID_CELL_SIZE = 10 # cm, probably
+VERBOSE_LOGGING = False
 
-# placeholders for the motor functions
-def move_forward(distance: int) -> None:
-  print(f'Moving forward {distance * GRID_CELL_SIZE} cm')
+ROBOT_PATHS = {
+  'center->blue': (
+    Vec2d(0, 0),
+    Vec2d(0, -10),
+    Vec2d(-17, -52)
+  )
+}
 
-def rotate(angle: int) -> None:
-  print(f'Rotating {angle} degrees')
+# add reversed paths
+ROBOT_PATHS['blue->center'] = ROBOT_PATHS['center->blue'][::-1]
+
+NODE_SIZE = 0.5 # if the robot is within this many centimeters of a node, it's at the node
 
 class Robot:
-  def __init__(self, x: int, y: int) -> None:
-    self.x = x
-    self.y = y
-    self.direction = 'north'
+  def __init__(self, x, y):
+    self.position = Vec2d(x, y)
+    self.heading = 0
 
-    # update display backend
-    display_backend.robot_display_pos = (self.x, self.y)
+  def at_node(self, node: Vec2d) -> bool:
+    delta = node - self.position # Vec2d
+    return delta.mag() < NODE_SIZE
+  
+  def turn_to_angle(self, angle: int) -> None:
+    print(f'Rotating {angle - self.heading}°')
+    self.heading = angle
 
-    self.angles = {
-      'north': {
-        'north': 0,
-        'south': 180,
-        'west': 90,
-        'east': -90,
-        'x': 0,
-        'y': -1
-      },
-      'south': {
-        'north': 180,
-        'south': 0,
-        'west': -90,
-        'east': 90,
-        'x': 0,
-        'y': 1
-      },
-      'west': {
-        'north': -90,
-        'south': 90,
-        'west': 0,
-        'east': 180,
-        'x': -1,
-        'y': 0
-      },
-      'east': {
-        'north': 90,
-        'south': -90,
-        'west': 180,
-        'east': 0,
-        'x': 1,
-        'y': 0
-      },
-    }
+  def move_forward(self, motor_degrees: int) -> None:
+    print(f'Rotating motors {motor_degrees}° to move forward {round(motor_degrees / 26, 3)} cm')
 
-  async def move(self, direction: str, distance: int=1) -> None:
-    rotate(self.angles[direction][self.direction])
-    self.x += self.angles[direction]['x']
-    self.y += self.angles[direction]['y']
-    move_forward(distance * GRID_CELL_SIZE)
-    self.direction = direction
+  def follow_path(self, path_name: str) -> None:
+    color_print(f"Moving along path '{path_name}'", foreground='magenta')
+    path = ROBOT_PATHS[path_name]
+    for i, node in enumerate(path):  
+      reached_node = False
+      while not reached_node:
+        color_print(f'--- Moving to node {i} ---', foreground='blue')
 
-    # update display backend
-    display_backend.robot_display_pos = (self.x, self.y)
-    
+        print((
+          f'Node position: {node}\n'
+          f'Current position: {self.position}'
+        ))
+
+        if self.at_node(node):
+          color_print('Already at node!\n', foreground='bright green')
+          reached_node = True
+        else:
+          delta = node - self.position
+
+          # the magnitude will be a float and the motor control functions only take ints,
+          # so we'll round to get as close as we can
+          mag_cm_raw = delta.mag()
+          mag_degrees_raw = mag_cm_raw * 26 # convert to degrees for maximum precision
+
+          mag_degrees_adjusted = round(mag_degrees_raw)
+          mag_cm_adjusted = mag_degrees_adjusted / 26
+          
+          mag_degrees_error = abs(mag_degrees_raw - mag_degrees_adjusted)
+          mag_cm_error = mag_degrees_error / 26
+
+          # adjust the heading
+          heading_raw = delta.heading()
+          heading_adjusted = round(heading_raw)
+          heading_error = abs(heading_raw - heading_adjusted)
+
+          if VERBOSE_LOGGING:
+            print((
+              f'Delta vector: {delta}\n\n'
+              f'Raw length: {round(mag_degrees_raw, 3)}° ({round(mag_cm_raw, 3)} cm)\n'
+              f'Adjusted length: {mag_degrees_adjusted}° ({round(mag_cm_adjusted, 3)} cm)\n'
+              f'Length error: {round(mag_degrees_error, 3)}° ({round(mag_cm_error, 3)} cm)\n\n'
+              f'Raw heading: {round(heading_raw, 3)}°\n'
+              f'Adjusted heading: {heading_adjusted}°\n'
+              f'Heading error: {round(heading_error, 3)}°\n'
+            ))
+
+          position_offset = vec_from_polar(mag_cm_adjusted, heading_adjusted)
+          if VERBOSE_LOGGING:
+            print(f'Adjusted vector: {position_offset}')
+
+          print('Moving to node...')
+          self.turn_to_angle(heading_adjusted)
+          self.move_forward(mag_degrees_adjusted)
+          color_print('done', foreground='green')
+
+          # update position
+          self.position += position_offset
+
+          print((
+            f'Final position: {self.position}\n'
+            f'Final error: {round((node - self.position).mag(), 3)} cm\n'
+          ))
+
+          # we're probably at the node, but check again just to be safe
+          if self.at_node(node):
+            color_print('Position on target, moving to next node', foreground='green')
+            reached_node = True
+          else:
+            color_print('Position off target, retrying current node', foreground='red')
+            
