@@ -3,6 +3,7 @@ from vector import *
 from robot_paths import *
 from config_vars import *
 
+''' --- Main Robot Class --- '''
 class Robot:
     def __init__(self, x, y):
         self.position = Vector(x, y)

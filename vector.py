@@ -1,5 +1,6 @@
 from math import sqrt, atan2, degrees, cos, sin, radians
 
+''' --- 2D Vector Class --- '''
 class Vector:
     def __init__(self, x: float, y: float) -> None:
         self.x = x

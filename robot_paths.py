@@ -1,6 +1,7 @@
 from vector import *
 from config_vars import *
 
+''' --- Path Nodes --- '''
 ROBOT_PATHS = {
     'center->blue': [
         Vector(0, 0),
