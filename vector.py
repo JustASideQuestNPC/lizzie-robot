@@ -24,7 +24,7 @@ class Vector:
 
     # returns a copy of this vector if we want to assign it to another variable - "vec_1 = vec_2"
     # copies by reference, not by value. that means a lot of things, but the important one is that
-    # they're actually the same object and changing one will also change the other
+    # they're actually the same object and changing one will also change the other.
     def copy(self):
         return Vector(self.x, self.y)
     
