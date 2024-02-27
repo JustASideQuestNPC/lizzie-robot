@@ -1,10 +1,7 @@
 # version of the robot class without any color_print calls
 from vector import *
 from robot_paths import *
-
-VERBOSE_LOGGING = True
-
-NODE_SIZE = 0.5 # if the robot is within this many centimeters of a node, it's at the node
+from config_vars import *
 
 class Robot:
   def __init__(self, x, y):

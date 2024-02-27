@@ -1,8 +1,7 @@
 from vector import *
 from color_print import color_print
 from robot_paths import *
-
-VERBOSE_LOGGING = True
+from config_vars import *
 
 class Robot:
   def __init__(self, x, y):
