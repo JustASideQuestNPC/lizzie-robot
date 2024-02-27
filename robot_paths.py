@@ -11,7 +11,7 @@ ROBOT_PATHS = {
 
 # add reversed paths
 if VERBOSE_LOGGING:
-    print('Generating reversed paths...', end='')
+    print('Generating reversed paths...', end = '')
 # adding to a dictionary while looping through it crashes the program, so we copy all the forward
 # paths to their own dictionary and loop through that instead
 forward_paths = ROBOT_PATHS.copy()
@@ -27,4 +27,4 @@ for name, nodes in forward_paths.items():
 
     ROBOT_PATHS[end + '->' + start] = reversed
 if VERBOSE_LOGGING:
-    print('Generating reversed paths...', end='')
+    print('done\n')

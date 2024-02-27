@@ -8,7 +8,7 @@ class Vector:
     # determines what appears when the vector is printed - without this, it'll print something along
     # the lines of "<Vector object at 0x000001F4D7DFB5E0>"
     def __repr__(self) -> str:
-        return f'({round(self.x, 3)}, {round(self.y, 3)})'
+        return '({x}, {y})'.format(x =  round(self.x, 3), y = round(self.y, 3))
 
     # overloads the comparison (==) operator
     def __eq__(self, other) -> bool:

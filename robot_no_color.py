@@ -22,77 +22,87 @@ class Robot:
         pass # keeps python happy; remove this when you add motor code
 
     def follow_path(self, path_name: str) -> None:
-        # normally we'd use f-strings, but SPIKE python uses an older version of python that doesn't
-        # support them
-        print("Moving along path '{pn}'".format(pn=path_name))
+        # normally we'd use f strings, but SPIKE python uses an older version of python that doesn't
+        # support them 
+        print("Moving along path '{pn}'".format(pn = path_name))
         path = ROBOT_PATHS[path_name]
         for i, node in enumerate(path):
             if VERBOSE_LOGGING:
                 print((
-                    f'--- Moving to node {i} ---\n'
-                    f'Node position: {node}\n'
-                    f'Current position: {self.position}'
-                ))
+                    '--- Moving to node {i} ---\n'
+                    'Node position: {n}\n'
+                    'Current position: {p}')
+                    .format(i = i, n = node, p = self.position)
+                )
 
             if self.at_node(node):
                 if VERBOSE_LOGGING:
                     print('Already at node!\n')
                 else:
-                    print('Already at node {i}'.format(i=i))
-                reached_node = True
-            else:
-                delta = node - self.position
+                    print('Already at node {i}'.format(i = i))
+                continue # end this iteration of the loop and go straight to the next node
 
-                # the magnitude will be a float and the motor control functions only take ints, so
-                # we'll round to get as close as we can
-                mag_cm_raw = delta.mag()
-                mag_degrees_raw = mag_cm_raw * 23 # convert to degrees for maximum precision
+            delta = node - self.position
 
-                mag_degrees_adjusted = round(mag_degrees_raw)
-                mag_cm_adjusted = mag_degrees_adjusted / 23
-                
-                mag_degrees_error = abs(mag_degrees_raw - mag_degrees_adjusted)
-                mag_cm_error = mag_degrees_error / 23
+            # the magnitude will be a float and the motor control functions only take ints, so
+            # we'll round to get as close as we can
+            mag_cm_raw = delta.mag()
+            mag_degrees_raw = mag_cm_raw * 23 # convert to degrees for maximum precision
 
-                # adjust the heading
-                heading_raw = delta.heading()
-                heading_adjusted = round(heading_raw)
-                heading_error = abs(heading_raw - heading_adjusted)
+            mag_degrees_adjusted = round(mag_degrees_raw)
+            mag_cm_adjusted = mag_degrees_adjusted / 23
+            
+            mag_degrees_error = abs(mag_degrees_raw - mag_degrees_adjusted)
+            mag_cm_error = mag_degrees_error / 23
 
-                if VERBOSE_LOGGING:
-                    print((
-                    f'Delta vector: {delta}\n\n'
-                    f'Raw length: {round(mag_degrees_raw, 3)}° ({round(mag_cm_raw, 3)} cm)\n'
-                    f'Adjusted length: {mag_degrees_adjusted}° ({round(mag_cm_adjusted, 3)} cm)\n'
-                    f'Length error: {round(mag_degrees_error, 3)}° ({round(mag_cm_error, 3)} cm)\n\n'
-                    f'Raw heading: {round(heading_raw, 3)}°\n'
-                    f'Adjusted heading: {heading_adjusted}°\n'
-                    f'Heading error: {round(heading_error, 3)}°\n'
-                    ))
+            # adjust the heading
+            heading_raw = delta.heading()
+            heading_adjusted = round(heading_raw)
+            heading_error = abs(heading_raw - heading_adjusted)
 
-                position_offset = vec_from_polar(mag_cm_adjusted, heading_adjusted)
-                if VERBOSE_LOGGING:
-                    print(f'Adjusted vector: {position_offset}')
+            if VERBOSE_LOGGING:
+                print((
+                    'Delta vector: {d}\n\n'
+                    'Raw length: {v0}° ({v1} cm)\n'
+                    'Adjusted length: {mda}° ({v2} cm)\n'
+                    'Length error: {v3}° ({v4} cm)\n\n'
+                    'Raw heading: {v5}°\n'
+                    'Adjusted heading: {ha}°\n'
+                    'Heading error: {v6}°\n')
+                    .format(d = delta, v0 = round(mag_degrees_raw, 3), v1 = round(mag_cm_raw, 3),
+                            mda = mag_degrees_adjusted, v2 = round(mag_cm_adjusted, 3),
+                            v3 = round(mag_degrees_error, 3), v4 = round(mag_cm_error, 3),
+                            v5 = round(heading_raw, 3), ha = heading_adjusted,
+                            v6 = round(heading_error, 3))
+                )
 
-                print(f'Moving to node {i}...', end='')
-                self.turn_to_angle(heading_adjusted)
-                self.move_forward(mag_degrees_adjusted)
-                print('done')
+            position_offset = vec_from_polar(mag_cm_adjusted, heading_adjusted)
+            if VERBOSE_LOGGING:
+                print('Adjusted vector: {po}'.format(po = position_offset))
 
-                # update position
-                self.position += position_offset
+            print('Moving to node {i}...'.format(i = i), end = '')
+            self.turn_to_angle(heading_adjusted)
+            self.move_forward(mag_degrees_adjusted)
+            print('done')
 
-                if VERBOSE_LOGGING:
-                    print((
-                    f'Final position: {self.position}\n'
-                    f'Final error: {round((node - self.position).mag(), 3)} cm'
-                    ))
+            # update position
+            self.position += position_offset
+
+            if VERBOSE_LOGGING:
+                print((
+                    'Final position: {p}\n'
+                    'Final error: {v0} cm')
+                    .format(p = self.position, v0 = round((node - self.position).mag(), 3))
+                )
 
         # find the final error now that we've reached the end of the path
-        end_node = ROBOT_PATHS[path_name][-1]
-        print('--- Pathing complete! ---')
-        print((
-        f'Target position: {end_node}\n'
-        f'Actual position: {self.position}\n'
-        f'Error: {round((end_node - self.position).mag(), 3)} cm'
-        ))
+        if VERBOSE_LOGGING:
+            end_node = ROBOT_PATHS[path_name][-1]
+            print('--- Pathing complete! ---')
+            print((
+                'Target position: {en}\n'
+                'Actual position: {p}\n'
+                'Error: {v0} cm')
+                .format(en = end_node, p = self.position,
+                        v0 = round((end_node - self.position).mag(), 3))
+            )
