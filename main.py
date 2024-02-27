@@ -15,5 +15,9 @@ if args.no_color:
 else:
     import robot
 
-robot = robot.Robot(0, 0)
+robot = robot.Robot(
+    config_vars.ROBOT_START_POSITION,
+    config_vars.ROBOT_START_HEADING,
+    config_vars.ROBOT_START_COLOR
+)
 robot.move_to_color('blue')

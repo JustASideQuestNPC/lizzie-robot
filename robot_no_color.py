@@ -5,10 +5,10 @@ from config_vars import *
 
 ''' --- Main Robot Class --- '''
 class Robot:
-    def __init__(self, x, y):
-        self.position = Vector(x, y)
-        self.heading = 0
-        self.current_color = 'center' # what color (or the center) we're currently at
+    def __init__(self, position: tuple[float, float], heading: float, color: str):
+        self.position = Vector(position[0], position[1])
+        self.heading = heading
+        self.current_color = color # what color (or the center) we're currently at
 
     def at_node(self, node: Vector) -> bool:
         delta = node - self.position # Vector
