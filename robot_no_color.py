@@ -7,6 +7,7 @@ class Robot:
     def __init__(self, x, y):
         self.position = Vector(x, y)
         self.heading = 0
+        self.current_color = 'center' # what color (or the center) we're currently at
 
     def at_node(self, node: Vector) -> bool:
         delta = node - self.position # Vector
@@ -21,11 +22,35 @@ class Robot:
         # motor code here
         pass # keeps python happy; remove this when you add motor code
 
-    def follow_path(self, path_name: str) -> None:
+    # follows a node path; returns True if the end color was reached successfully
+    def move_to_color(self, target_color=str) -> int:
+        path_name = self.current_color + '->' + target_color
+        # if a direct path doesn't exist, try to work around it
+        if path_name not in ROBOT_PATHS:
+            # if the target is the center or we're at the center, give up and crash
+            if self.current_color == 'center' or target_color == 'center':
+                print("FATAL ERROR: Target color '{tc}' is unreachable from this position ({cc})!"
+                      .format(tc = target_color, cc=self.current_color))
+                return False
+            # otherwise, try to reach it via the center
+            else:
+                print((
+                    "No direct path exists from current position ({cc}) to target position '{tc}'; "
+                    'attempting to reach it via the center.')
+                    .format(cc = self.current_color, tc = target_color)
+                )
+                # catch the status codes from the two move calls and only return them if they failed
+                if not self.move_to_color('center'):
+                    return False
+                if not self.move_to_color(target_color):
+                    return False
+                return True # now return a sucess code
+
         # normally we'd use f strings, but SPIKE python uses an older version of python that doesn't
         # support them 
         print("Moving along path '{pn}'".format(pn = path_name))
         path = ROBOT_PATHS[path_name]
+
         for i, node in enumerate(path):
             if VERBOSE_LOGGING:
                 print((
@@ -106,3 +131,7 @@ class Robot:
                 .format(en = end_node, p = self.position,
                         v0 = round((end_node - self.position).mag(), 3))
             )
+        
+        # update our color and return True to indicate a success
+        self.current_color = target_color
+        return True

@@ -16,4 +16,4 @@ else:
     import robot
 
 robot = robot.Robot(0, 0)
-robot.follow_path('center->blue')
+robot.move_to_color('blue')
