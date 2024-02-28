@@ -6,7 +6,7 @@ from config_vars import *
 ''' --- Main Robot Class --- '''
 class Robot:
     def __init__(self, position: tuple[float, float], heading: float, color: str):
-        self.position = Vector(position[0], position[1])
+        self.position = Vector(position)
         self.heading = heading
         self.current_color = color # what color (or the center) we're currently at
 
@@ -76,17 +76,19 @@ class Robot:
             mag_degrees_raw = mag_cm_raw * 23 # convert to degrees for maximum precision
 
             mag_degrees_adjusted = round(mag_degrees_raw)
+            mag_cm_adjusted = mag_degrees_adjusted / 23
 
             # adjust the heading
             heading_raw = delta.heading()
             heading_adjusted = round(heading_raw)
 
+            
+            position_offset = vec_from_polar(mag_cm_adjusted, heading_adjusted)
+
             if VERBOSE_LOGGING:
-                mag_cm_adjusted = mag_degrees_adjusted / 23
                 mag_degrees_error = abs(mag_degrees_raw - mag_degrees_adjusted)
                 mag_cm_error = mag_degrees_error / 23
                 heading_error = abs(heading_raw - heading_adjusted)
-                position_offset = vec_from_polar(mag_cm_adjusted, heading_adjusted)
                 print((
                     'Delta vector: {d}\n\n'
                     'Raw length: {v0}° ({v1} cm)\n'

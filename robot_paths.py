@@ -4,15 +4,51 @@ from config_vars import *
 ''' --- Path Nodes --- '''
 ROBOT_PATHS = {
     'center->blue': [
-        Vector(0, 0),
-        Vector(0, -10),
-        Vector(-17, -52)
+        (  0,   0),
+        (  0, -18),
+        ( 38, -18),
+        ( 38, -32),
+        ( 38, -47),
+        ( 12, -67),
+        (-17, -67),
+        (-17, -52)
+    ],
+    'center->green': [
+        (  0,   0),
+        (  0, -18),
+        (-27, -12),
+        (-27,   7),
+        (-40,  23)
+    ],
+    'center->red': [
+        (  0,   0),
+        (  0,  14),
+        ( 31,  30),
+        ( 41,  46)
+    ],
+    'center->yellow': [
+        (  0,   0),
+        (  0, -18),
+        ( 38, -18),
+        ( 38, -32)
+    ],
+    'yellow->blue': [
+        ( 38, -32),
+        ( 38, -47),
+        ( 12, -67),
+        (-17, -67),
+        (-17, -52)
+    ],
+    'yellow->red': [
+        ( 38, -32),
+        ( 42, -16),
+        ( 41, -46)
     ]
 }
 
-# add reversed paths
+# convert coordinate pairs to vectors and add reversed paths
 if VERBOSE_LOGGING:
-    print('Generating reversed paths...', end = '')
+    print('Generating path vectors...', end = '')
 # adding to a dictionary while looping through it crashes the program, so we copy all the forward
 # paths to their own dictionary and loop through that instead
 forward_paths = ROBOT_PATHS.copy()
@@ -21,10 +57,13 @@ for name, nodes in forward_paths.items():
     # get the start and end color on their own (split() returns a list we can unpack)
     start, end = name.split('->')
 
-    # reverse the path manually because SPIKE python only supports slices with a step of 1
-    reversed = []
-    for i in range(len(nodes)):
-        reversed.append(nodes[len(nodes) - 1 - i])
+    # create a list with the same length as the path so indexing works correctly in the loop
+    reversed = [None] * len(nodes)
+    for i, node in enumerate(nodes):
+        vec = Vector(node)
+        ROBOT_PATHS[name][i] = vec
+        # add a copy of the vector to the reversed path
+        reversed[len(nodes) - 1 - i] = vec.copy()
 
     ROBOT_PATHS[end + '->' + start] = reversed
 if VERBOSE_LOGGING:
