@@ -11,7 +11,7 @@ class Robot:
         self.current_color = color # what color (or the center) we're currently at
 
     def at_node(self, node: Vector) -> bool:
-        delta = node - self.position # Vector
+        delta = node - self.position
         return delta.mag() < NODE_SIZE
     
     def turn_to_angle(self, angle: int) -> None:
