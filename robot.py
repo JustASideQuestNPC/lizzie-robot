@@ -2,6 +2,12 @@
 from vector import *
 from robot_paths import *
 from config_vars import *
+from random import shuffle
+
+# dummy colors for testing control flow
+cargo_colors = ['red', 'green', 'blue', 'yellow']
+color_index = 0
+shuffle(cargo_colors)
 
 ''' --- Main Robot Class --- '''
 class Robot:
@@ -23,16 +29,30 @@ class Robot:
         # motor code here
         pass # keeps python happy; remove this when you add motor code
 
-    # follows a node path; returns True if the end color was reached successfully
-    async def move_to_color(self, target_color=str) -> int:
+    async def release_cargo(self) -> None:
+        print('Releasing cargo...', end='')
+        # motor code here
+        print('done')
+
+    def get_cargo_color(self) -> str:
+        if False: # check if the color sensor is recieving too little light here
+            raise RuntimeError('Cannot detect cargo color!')
+        # replace this with a color sensor check
+        global cargo_colors
+        global color_index
+        color = cargo_colors[color_index]
+        color_index += 1
+        return color
+
+    # follows a node path; raises an error if the color is unreachable
+    async def move_to_color(self, target_color=str) -> None:
         path_name = self.current_color + '->' + target_color
         # if a direct path doesn't exist, try to work around it
         if path_name not in ROBOT_PATHS:
             # if the target is the center or we're at the center, give up and crash
             if self.current_color == 'center' or target_color == 'center':
-                print("FATAL ERROR: Target color '{tc}' is unreachable from this position ({cc})!"
+                raise RuntimeError("Target color '{tc}' is unreachable from this position ({cc})!"
                       .format(tc = target_color, cc=self.current_color))
-                return False
             # otherwise, try to reach it via the center
             else:
                 print((
@@ -41,11 +61,9 @@ class Robot:
                     .format(cc = self.current_color, tc = target_color)
                 )
                 # catch the status codes from the two move calls and only return them if they failed
-                if not self.move_to_color('center'):
-                    return False
-                if not self.move_to_color(target_color):
-                    return False
-                return True # now return a sucess code
+                await self.move_to_color('center')
+                await self.move_to_color(target_color)
+                return
 
         # normally we'd use f strings, but SPIKE python uses an older version of python that doesn't
         # support them 
@@ -133,6 +151,4 @@ class Robot:
                         v0 = round((end_node - self.position).mag(), 3))
             )
         
-        # update our color and return True to indicate a success
         self.current_color = target_color
-        return True

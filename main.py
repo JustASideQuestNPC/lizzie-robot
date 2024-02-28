@@ -17,6 +17,10 @@ async def main() -> None:
         config_vars.ROBOT_START_HEADING,
         config_vars.ROBOT_START_COLOR
     )
-    await robot.move_to_color('blue')
+
+    for i in range(4):
+        cargo_color = robot.get_cargo_color()
+        await robot.move_to_color(cargo_color)
+        await robot.release_cargo()
 
 asyncio.run(main())
