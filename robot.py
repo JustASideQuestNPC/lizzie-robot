@@ -45,14 +45,14 @@ class Robot:
         return color
 
     # follows a node path; raises an error if the color is unreachable
-    async def move_to_color(self, target_color=str) -> None:
+    async def move_to_color(self, target_color: str) -> None:
         path_name = self.current_color + '->' + target_color
         # if a direct path doesn't exist, try to work around it
         if path_name not in ROBOT_PATHS:
             # if the target is the center or we're at the center, give up and crash
             if self.current_color == 'center' or target_color == 'center':
                 raise RuntimeError("Target color '{tc}' is unreachable from this position ({cc})!"
-                      .format(tc = target_color, cc=self.current_color))
+                      .format(tc = target_color, cc = self.current_color))
             # otherwise, try to reach it via the center
             else:
                 print((
@@ -120,7 +120,7 @@ class Robot:
                             mda = mag_degrees_adjusted, v2 = round(mag_cm_adjusted, 3),
                             v3 = round(mag_degrees_error, 3), v4 = round(mag_cm_error, 3),
                             v5 = round(heading_raw, 3), ha = heading_adjusted,
-                            v6 = round(heading_error, 3), po=position_offset)
+                            v6 = round(heading_error, 3), po = position_offset)
                 )
 
             print('Moving to node {i}...'.format(i = i), end = '')

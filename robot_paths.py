@@ -57,14 +57,13 @@ for name, nodes in forward_paths.items():
     # get the start and end color on their own (split() returns a list we can unpack)
     start, end = name.split('->')
 
-    # create a list with the same length as the path so indexing works correctly in the loop
-    reversed = [None] * len(nodes)
+    # create vectors
+    path_vectors = []
     for i, node in enumerate(nodes):
-        vec = Vector(node)
-        ROBOT_PATHS[name][i] = vec
-        # add a copy of the vector to the reversed path
-        reversed[len(nodes) - 1 - i] = vec.copy()
+        path_vectors.append(Vector(node))
 
-    ROBOT_PATHS[end + '->' + start] = reversed
+    ROBOT_PATHS[name] = path_vectors;
+    ROBOT_PATHS[end + '->' + start] = [path_vectors[len(path_vectors) - 1 - i].copy() for i in range(len(path_vectors))]
+
 if VERBOSE_LOGGING:
     print('done\n')
