@@ -14,17 +14,17 @@ class Robot:
         delta = node - self.position
         return delta.mag() < NODE_SIZE
     
-    def turn_to_angle(self, angle: int) -> None:
+    async def turn_to_angle(self, angle: int) -> None:
         delta = angle - self.heading
         # motor code here
         self.heading = angle
 
-    def move_forward(self, motor_degrees: int) -> None:
+    async def move_forward(self, motor_degrees: int) -> None:
         # motor code here
         pass # keeps python happy; remove this when you add motor code
 
     # follows a node path; returns True if the end color was reached successfully
-    def move_to_color(self, target_color=str) -> int:
+    async def move_to_color(self, target_color=str) -> int:
         path_name = self.current_color + '->' + target_color
         # if a direct path doesn't exist, try to work around it
         if path_name not in ROBOT_PATHS:
@@ -106,8 +106,8 @@ class Robot:
                 )
 
             print('Moving to node {i}...'.format(i = i), end = '')
-            self.turn_to_angle(heading_adjusted)
-            self.move_forward(mag_degrees_adjusted)
+            await self.turn_to_angle(heading_adjusted)
+            await self.move_forward(mag_degrees_adjusted)
             print('done')
 
             # update position
