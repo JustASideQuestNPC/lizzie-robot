@@ -8,6 +8,7 @@ ROBOT_START_HEADING  = 0        # degrees
 ROBOT_START_COLOR    = 'center' # 'center', 'red', 'green', 'yellow', or 'blue'
 DRIVE_MOTOR_SPEED    = 540      # degrees per second
 CARGO_MOTOR_SPEED    = 360      # degrees per second
+CARGO_MOTOR_DISTANCE = 415      # degrees
 MIN_COLOR_INTENSITY  = 30       # color sensor fails if it isn't recieving at least this much light (0 - 100%)
 LEFT_WHEEL_PORT      = 'port.W'
 RIGHT_WHEEL_PORT     = 'port.X'
