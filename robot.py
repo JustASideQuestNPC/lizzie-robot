@@ -22,12 +22,11 @@ class Robot:
     
     async def turn_to_angle(self, angle: int) -> None:
         delta = angle - self.heading
-        # motor code here
+        print('rotating {d}°'.format(d = delta))
         self.heading = angle
 
     async def move_forward(self, motor_degrees: int) -> None:
-        # motor code here
-        pass # keeps python happy; remove this when you add motor code
+        print('turning motors {md}° forward'.format(md = motor_degrees))
 
     async def release_cargo(self) -> None:
         print('Releasing cargo...', end='')
@@ -123,10 +122,10 @@ class Robot:
                             v6 = round(heading_error, 3), po = position_offset)
                 )
 
-            print('Moving to node {i}...'.format(i = i), end = '')
+            # print('Moving to node {i}...'.format(i = i), end = '')
             await self.turn_to_angle(heading_adjusted)
             await self.move_forward(mag_degrees_adjusted)
-            print('done')
+            # print('done')
 
             # update position
             self.position += position_offset
